@@ -288,13 +288,16 @@
         Contaminación
         <span>Global del Aire</span>
       </h1>
-
-      Este Proyecto trata de visualizar la contaminacion del aire a nivel global, aqui se identifican <br/>
-      las principales causan junto a los paises que estan calificados con la peor calidad de aire.<br/><br/>
-      Link del dataset : 
-      https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset?resource=download<br/><br/>
-
-      Link pagina que recopila los datos : https://map.elichens.com/
+      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; margin: 1rem 0;">
+        El aire que respiramos no es igual en todo el mundo. Este análisis identifica los países con 
+        peor calidad del aire, los contaminantes que más contribuyen y cómo se relacionan entre sí.
+      </p>
+      <p style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--text-dim); margin-top:1rem; line-height:2;">
+        Dataset: <a href="https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset?resource=download" 
+          target="_blank" style="color:var(--accent);">Kaggle — Global Air Pollution</a><br/>
+        Fuente de datos: <a href="https://map.elichens.com/" 
+          target="_blank" style="color:var(--accent);">map.elichens.com</a>
+      </p>
 
 
     
@@ -346,6 +349,11 @@
         <span class="aqi-chip" style="background:#3a1a1a;color:#ff5a5a;">Peligroso (151–200)</span>
       </div>
     </div>
+      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; padding: 0 0.5rem;">
+        Estos países comparten un factor común: niveles extremos de PM2.5. 
+        Pero, ¿es este el contaminante dominante a nivel global?
+      </p>
+
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-number">02</div>
@@ -366,6 +374,11 @@
         <span class="aqi-chip" style="background:#1a3a2a;color:#5affaa;">Monoxido de Carbono (CO)</span>
       </div>
     </div>
+      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; padding: 0 0.5rem;">
+      Con PM2.5 representando el 63% de la contaminación promedio global, 
+      ¿qué países concentran simultáneamente los peores niveles de PM2.5 y Ozono?
+    </p>
+
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-number">03</div>
@@ -384,6 +397,14 @@
         <span class="aqi-chip" style="background:#1a2a1a;color:#b8ff5a;">Eje X = PM2.5 promedio</span>
         <span class="aqi-chip" style="background:#1a2a1a;color:#5affaa;">Eje Y = Ozono promedio</span>
       </div>
+      <div style="border-left: 3px solid var(--accent); padding: 1rem 1.5rem; background: rgba(90,255,110,0.05); border-radius: 0 4px 4px 0;">
+        <p style="font-size:0.8rem; color:var(--accent); font-family:'Space Mono',monospace; margin-bottom:0.5rem;">CONCLUSIÓN</p>
+        <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; margin:0;">
+          Los datos muestran que la contaminación por partículas finas (PM2.5) es la principal amenaza 
+          para la calidad del aire a nivel global, concentrada especialmente en Asia del Sur y Medio Oriente. 
+          India, con 2488 ciudades monitoreadas, representa la mayor escala del problema, mientras que 
+          Republic of Korea registra el AQI más extremo del dataset con un valor de 421.
+      </p>
     </div>
 
   </main>
