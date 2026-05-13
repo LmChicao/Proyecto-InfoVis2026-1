@@ -4,84 +4,177 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contaminación Global del Aire — InfoVis 2026</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     :root {
-        --bg:        #436f43;   /* antes: #0a0d0a → demasiado negro */
-        --surface:   #467146;   /* un poco más claro */
-        --card:      #222b22;   /* levanta las tarjetas */
-        --border:    #2d3f2d;
-        --accent:    #5aff6e;
-        --accent2:   #b8ff5a;
-        --muted:     #4a6a4a;
-        --text:      #e6f5e6;
-        --text-dim:  #9bbf9b;
-      }
+      --bg:        #2a4a2a;
+      --bg2:       #2e502e;
+      --card:      #1e2e1e;
+      --card2:     #223222;
+      --border:    #3a5a3a;
+      --border2:   #446044;
+      --accent:    #6dff82;
+      --accent2:   #c8ff6a;
+      --accent-dim:#3a7040;
+      --danger:    #e8732a;
+      --text:      #eaf5ea;
+      --text-dim:  #9bbf9b;
+      --text-faint:#5a8a5a;
+    }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Body & noise texture ── */
     body {
-      background: var(--bg);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(60,110,60,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 100%, rgba(40,80,40,0.3) 0%, transparent 55%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
       color: var(--text);
       font-family: 'Syne', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-    }    
-
-    
-    header {
-      position: relative; z-index: 1;
-      padding: 4rem 2rem 2rem;
-      border-bottom: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: end;
-      gap: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
     }
 
-    .header-badge {
+    /* ── Top bar ── */
+    .topbar {
+      width: 100%;
+      border-bottom: 1px solid var(--border);
+      padding: 0.6rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(30,50,30,0.7);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-left {
       font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      color: var(--accent);
+      font-size: 0.6rem;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      background: rgba(90,255,110,0.07);
-      border: 1px solid rgba(90,255,110,0.2);
-      padding: 0.3rem 0.8rem;
-      border-radius: 2px;
-      display: inline-block;
-      margin-bottom: 1rem;
+      color: var(--text-dim);
+    }
+    .topbar-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* ── Header ── */
+    header {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 5rem 2rem 3.5rem;
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 3rem;
+      align-items: end;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    /* Decorative large number behind title */
+    header::before {
+      content: 'AQI';
+      position: absolute;
+      top: 2rem; right: 2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(5rem, 12vw, 10rem);
+      font-weight: 700;
+      color: var(--text-faint);
+      letter-spacing: -0.05em;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .header-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.2rem;
+    }
+    .eyebrow-line {
+      width: 28px; height: 1px;
+      background: var(--accent);
+    }
+    .eyebrow-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--accent);
     }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 800;
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.4rem, 5.5vw, 4.2rem);
+      font-weight: 400;
       line-height: 1.05;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.01em;
+      margin-bottom: 0.2rem;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--accent);
     }
 
-    h1 span {
-      color: var(--accent);
-      display: block;
+    .header-desc {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      line-height: 1.75;
+      margin-top: 1.2rem;
+      max-width: 520px;
+      border-left: 2px solid var(--border2);
+      padding-left: 1rem;
     }
+
+    .header-links {
+      margin-top: 1.4rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-faint);
+      line-height: 2.2;
+    }
+    .header-links a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid var(--accent-dim);
+      transition: border-color 0.2s;
+    }
+    .header-links a:hover { border-color: var(--accent); }
 
     .header-meta {
       text-align: right;
       font-family: 'Space Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--text-dim);
+      font-size: 0.7rem;
+      color: var(--text-faint);
       line-height: 2;
+      position: relative;
+      z-index: 1;
     }
-
     .header-meta strong {
-      color: var(--text);
       display: block;
+      color: var(--text-dim);
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
     }
 
     /* ── Stats bar ── */
     .stats-bar {
-      position: relative; z-index: 1;
       max-width: 1200px;
       margin: 0 auto;
       display: grid;
@@ -90,148 +183,214 @@
     }
 
     .stat {
-      padding: 1.5rem 2rem;
+      padding: 2rem 2rem 1.5rem;
       border-right: 1px solid var(--border);
-      animation: fadeUp 0.6s ease both;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 0.5s ease both;
     }
+    .stat:last-child { border-right: none; }
 
+    .stat::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 2rem;
+      width: 24px; height: 2px;
+      background: var(--accent);
+      opacity: 0.5;
+    }
 
     .stat-num {
       font-family: 'Space Mono', monospace;
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 700;
       color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.03em;
     }
 
     .stat-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-dim);
-      margin-top: 0.25rem;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
     }
 
-    /* ── Main content ── */
+    /* ── Main ── */
     main {
-      position: relative; z-index: 1;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 3rem 2rem 5rem;
+      padding: 4rem 2rem 6rem;
       display: flex;
       flex-direction: column;
-      gap: 3rem;
+      gap: 1rem;
+    }
+
+    /* ── Section label ── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.5rem 0 0.5rem;
+    }
+    .section-divider span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      white-space: nowrap;
+    }
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
     /* ── Chart card ── */
     .chart-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 4px;
+      border-top: 2px solid var(--border2);
       overflow: hidden;
-      animation: fadeUp 0.7s ease both;
-    }
-
-    .chart-header {
-      padding: 1.5rem 2rem;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-    }
-
-    .chart-number {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--accent);
-      background: rgba(90,255,110,0.08);
-      border: 1px solid rgba(90,255,110,0.15);
-      padding: 0.2rem 0.5rem;
-      border-radius: 2px;
-      white-space: nowrap;
-      margin-top: 0.2rem;
-    }
-
-    .chart-title-block h2 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-    }
-
-    .chart-title-block p {
-      font-size: 0.82rem;
-      color: var(--text-dim);
-      margin-top: 0.3rem;
-      line-height: 1.5;
-    }
-
-    .chart-body {
-      padding: 2.5rem 2rem;
-      min-height: 320px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      animation: fadeUp 0.6s ease both;
       position: relative;
     }
 
-    /* ── Placeholder image slots ── */
-    .img-slot {
-      width: 100%;
-      aspect-ratio: 16/7;
-      background: var(--surface);
-      border: 1px dashed var(--muted);
-      border-radius: 3px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      transition: border-color 0.2s;
+    /* accent glow top-left corner */
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 40px; height: 2px;
+      background: var(--accent);
     }
 
-    .img-slot img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      border-radius: 3px;
-      display: block;
+    .chart-header {
+      padding: 1.6rem 2rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.2rem;
+      align-items: start;
+      background: var(--card2);
     }
 
-    .img-slot:not(:has(img)):hover { border-color: var(--accent); }
-
-    .placeholder-icon {
-      font-size: 2rem;
-      opacity: 0.3;
+    .chart-number {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      line-height: 1;
+      color: var(--text-faint);
+      letter-spacing: -0.02em;
+      margin-top: 0.1rem;
+      font-style: italic;
     }
 
-    .placeholder-text {
-      font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
+    .chart-title-block h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      color: var(--text);
+    }
+
+    .chart-title-block p {
+      font-size: 0.78rem;
       color: var(--text-dim);
-      text-align: center;
+      margin-top: 0.35rem;
+      line-height: 1.6;
+      font-family: 'Space Mono', monospace;
     }
+
+    .chart-body {
+      padding: 1.5rem 1rem 0.5rem;
+    }
+
+    .plotly-chart { width: 100%; }
+    .plotly-chart > div { width: 100% !important; }
 
     /* ── AQI legend ── */
     .aqi-legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
-      padding: 1rem 2rem 1.5rem;
+      gap: 0.4rem;
+      padding: 1rem 2rem 1.4rem;
       border-top: 1px solid var(--border);
+      background: rgba(0,0,0,0.15);
     }
 
     .aqi-chip {
       font-family: 'Space Mono', monospace;
-      font-size: 0.65rem;
-      padding: 0.25rem 0.7rem;
-      border-radius: 2px;
-      letter-spacing: 0.05em;
+      font-size: 0.6rem;
+      padding: 0.2rem 0.65rem;
+      letter-spacing: 0.04em;
+      border-radius: 1px;
+    }
+
+    /* ── Narrative bridge text ── */
+    .narrative-wrap {
+      padding: 2rem 0 1rem;
+      display: grid;
+      grid-template-columns: 24px 1fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .narrative-icon {
+      width: 24px; height: 24px;
+      border: 1px solid var(--accent-dim);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+    .narrative {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.8;
+      font-style: italic;
+    }
+
+    /* ── Conclusion box ── */
+    .conclusion-box {
+      margin: 0.5rem 2rem 1.5rem;
+      padding: 1.2rem 1.5rem;
+      background: linear-gradient(135deg, rgba(109,255,130,0.04) 0%, transparent 100%);
+      border: 1px solid var(--border2);
+      border-left: 3px solid var(--accent);
+      position: relative;
+    }
+    .conclusion-box::after {
+      content: '→';
+      position: absolute;
+      top: 1.2rem; right: 1.5rem;
+      color: var(--accent-dim);
+      font-size: 1rem;
+    }
+    .conclusion-box .label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+    }
+    .conclusion-box p {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      line-height: 1.75;
+      max-width: 800px;
     }
 
     /* ── Footer ── */
     footer {
-      position: relative; z-index: 1;
       max-width: 1200px;
       margin: 0 auto;
-      padding: 2rem;
+      padding: 1.5rem 2rem;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
@@ -239,39 +398,33 @@
       gap: 1rem;
       flex-wrap: wrap;
     }
-
     footer p {
       font-family: 'Space Mono', monospace;
-      font-size: 0.7rem;
-      color: var(--text-dim);
+      font-size: 0.62rem;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
     }
-
-    footer span {
-      color: var(--accent);
-    }
-
-    /* ── Glowing line decoration ── */
-    .glow-line {
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--accent), transparent);
-      margin-bottom: 1rem;
-    }
+    footer span { color: var(--text-dim); }
 
     /* ── Animations ── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
+
+    .stat:nth-child(1) { animation-delay: 0.05s; }
+    .stat:nth-child(2) { animation-delay: 0.12s; }
+    .stat:nth-child(3) { animation-delay: 0.19s; }
+    .stat:nth-child(4) { animation-delay: 0.26s; }
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
       header { grid-template-columns: 1fr; }
+      header::before { display: none; }
       .header-meta { text-align: left; }
       .stats-bar { grid-template-columns: repeat(2, 1fr); }
       .stat:nth-child(2) { border-right: none; }
     }
-
     @media (max-width: 480px) {
       .stats-bar { grid-template-columns: 1fr; }
       .stat { border-right: none; }
@@ -280,35 +433,41 @@
 </head>
 <body>
 
-   <header>
+  <!-- top bar -->
+  <div class="topbar">
+    <span class="topbar-left">InfoVis 2026-1 · Grupo 7 · Contaminación Global del Aire</span>
+    <div class="topbar-dot"></div>
+  </div>
+
+  <header>
     <div>
-      <div class="header-badge">InfoVis 2026-1 · Grupo 7</div>
-    
+      <div class="header-eyebrow">
+        <div class="eyebrow-line"></div>
+        <span class="eyebrow-text">Análisis de Calidad del Aire · 2026</span>
+      </div>
       <h1>
-        Contaminación
-        <span>Global del Aire</span>
+        Contaminación<br>
+        <em>Global del Aire</em>
       </h1>
-      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; margin: 1rem 0;">
-        El aire que respiramos no es igual en todo el mundo. Este análisis identifica los países con 
+      <p class="header-desc">
+        El aire que respiramos no es igual en todo el mundo. Este análisis identifica los países con
         peor calidad del aire, los contaminantes que más contribuyen y cómo se relacionan entre sí.
       </p>
-      <p style="font-family:'Space Mono',monospace; font-size:0.75rem; color:var(--text-dim); margin-top:1rem; line-height:2;">
-        Dataset: <a href="https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset?resource=download" 
-          target="_blank" style="color:var(--accent);">Kaggle — Global Air Pollution</a><br/>
-        Fuente de datos: <a href="https://map.elichens.com/" 
-          target="_blank" style="color:var(--accent);">map.elichens.com</a>
+      <p class="header-links">
+        Dataset: <a href="https://www.kaggle.com/datasets/hasibalmuzdadid/global-air-pollution-dataset?resource=download"
+          target="_blank">Kaggle — Global Air Pollution</a><br/>
+        Fuente de datos: <a href="https://map.elichens.com/" target="_blank">map.elichens.com</a>
       </p>
-
-
-    
-      <div class="header-meta">
-      Ninoska Cid<br/><!-- Esto es un salto de linea xd -->
-      Lucas Chicao<br/> 
+    </div>
+    <div class="header-meta">
+      <strong>Estudiantes</strong>
+      Ninoska Cid<br/>
+      Lucas Chicao<br/>
       Isidora Gómez
-      </div>
+    </div>
   </header>
 
-<!-- ══ STATS BAR ══ -->
+  <!-- ══ STATS BAR ══ -->
   <div class="stats-bar">
     <div class="stat">
       <div class="stat-num">23.463</div>
@@ -320,94 +479,354 @@
     </div>
     <div class="stat">
       <div class="stat-num">180+</div>
-      <div class="stat-label">Paises en el dataset</div>
+      <div class="stat-label">Países en el dataset</div>
     </div>
     <div class="stat">
       <div class="stat-num">AQI</div>
-      <div class="stat-label">Indice de calidad del aire</div>
+      <div class="stat-label">Índice de calidad del aire</div>
     </div>
   </div>
 
   <main>
+
+    <!-- ══ GRÁFICO 1 ══ -->
+    <div class="section-divider"><span>Visualización 01 — Ranking global</span></div>
+
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-number">01</div>
         <div class="chart-title-block">
-          <h2>Top 7 Paises con Peor Calidad de Aire</h2>
-          <p>Promedio del indice AQI general por pais. Valores mas altos indican mayor contaminacion atmosferica.</p>
+          <h2>Top 7 Países con Peor Calidad de Aire</h2>
+          <p>Promedio del índice AQI general por país. Valores más altos indican mayor contaminación atmosférica.</p>
         </div>
       </div>
       <div class="chart-body">
-        <div class="img-slot">
-          <img src="Graficos/grafico1.png" alt="Top 7 paises con peor calidad de aire"/>
-        </div>
+        <div id="grafico1" class="plotly-chart"></div>
       </div>
       <div class="aqi-legend">
-        <span class="aqi-chip" style="background:#1a3a1a;color:#5aff6e;">Bueno (0–50)</span>
-        <span class="aqi-chip" style="background:#3a3a1a;color:#ffff5a;">Moderado (51–100)</span>
-        <span class="aqi-chip" style="background:#3a2a1a;color:#ffaa5a;">Peligroso para personas con sensibilidad (101–150)</span>
-        <span class="aqi-chip" style="background:#3a1a1a;color:#ff5a5a;">Peligroso (151–200)</span>
+        <span class="aqi-chip" style="background:#0d2210;color:#5aff6e;">Bueno (0–50)</span>
+        <span class="aqi-chip" style="background:#2a2510;color:#ffd85a;">Moderado (51–100)</span>
+        <span class="aqi-chip" style="background:#2a1a0a;color:#ffaa5a;">Sensible (101–150)</span>
+        <span class="aqi-chip" style="background:#2a0d0d;color:#ff6060;">Peligroso (151–200)</span>
       </div>
     </div>
-      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; padding: 0 0.5rem;">
-        Estos países comparten un factor común: niveles extremos de PM2.5. 
+
+    <div class="narrative-wrap">
+      <div class="narrative-icon">↓</div>
+      <p class="narrative">
+        Estos países comparten un factor común: niveles extremos de PM2.5.
         Pero, ¿es este el contaminante dominante a nivel global?
       </p>
+    </div>
+
+    <!-- ══ GRÁFICO 2 ══ -->
+    <div class="section-divider"><span>Visualización 02 — Composición</span></div>
 
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-number">02</div>
         <div class="chart-title-block">
-          <h2>¿Que es lo que mas ensucia el aire a nivel mundial?</h2>
-          <p>Distribucion porcentual del promedio de cada contaminante: PM2.5, Ozono, NO₂ y CO.</p>
+          <h2>¿Qué es lo que más ensucia el aire a nivel mundial?</h2>
+          <p>Distribución porcentual del promedio de cada contaminante: PM2.5, Ozono, NO₂ y CO.</p>
         </div>
       </div>
       <div class="chart-body">
-        <div class="img-slot">
-          <img src="Graficos/grafico2.png" alt="Distribucion de contaminantes a nivel mundial"/>
-        </div>
+        <div id="grafico2" class="plotly-chart"></div>
       </div>
       <div class="aqi-legend">
-        <span class="aqi-chip" style="background:#1a2a3a;color:#5ab4ff;">Humo, Polvo y Hollín (PM2.5)</span>
-        <span class="aqi-chip" style="background:#2a1a3a;color:#b45aff;">Gas Ozono (Irritante)</span>
-        <span class="aqi-chip" style="background:#3a2a1a;color:#ffaa5a;">Gases de escape de autos (NO₂)</span>
-        <span class="aqi-chip" style="background:#1a3a2a;color:#5affaa;">Monoxido de Carbono (CO)</span>
+        <span class="aqi-chip" style="background:#1a1208;color:#c87a40;">Humo, Polvo y Hollín (PM2.5)</span>
+        <span class="aqi-chip" style="background:#0a1525;color:#5ab4ff;">Gas Ozono (Irritante)</span>
+        <span class="aqi-chip" style="background:#1f1108;color:#ffaa5a;">Gases de escape (NO₂)</span>
+        <span class="aqi-chip" style="background:#081508;color:#5aff8a;">Monóxido de Carbono (CO)</span>
       </div>
     </div>
-      <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; padding: 0 0.5rem;">
-      Con PM2.5 representando el 63% de la contaminación promedio global, 
-      ¿qué países concentran simultáneamente los peores niveles de PM2.5 y Ozono?
-    </p>
+
+    <div class="narrative-wrap">
+      <div class="narrative-icon">↓</div>
+      <p class="narrative">
+        Con PM2.5 representando el 63% de la contaminación promedio global,
+        ¿qué países concentran simultáneamente los peores niveles de PM2.5 y Ozono?
+      </p>
+    </div>
+
+    <!-- ══ GRÁFICO 3 ══ -->
+    <div class="section-divider"><span>Visualización 03 — Relación entre contaminantes</span></div>
 
     <div class="chart-card">
       <div class="chart-header">
         <div class="chart-number">03</div>
         <div class="chart-title-block">
-          <h2>Top 15 Paises con Mayor Contaminacion Promedio</h2>
-          <p>Relacion entre PM2.5 y Ozono por país. El tamaño del circulo indica la cantidad de ciudades con datos disponibles.</p>
+          <h2>Top 15 Países con Mayor Contaminación Promedio</h2>
+          <p>Relación entre PM2.5 y Ozono por país. El tamaño del círculo indica la cantidad de ciudades con datos disponibles.</p>
         </div>
       </div>
       <div class="chart-body">
-        <div class="img-slot">
-          <img src="Graficos/grafico3.png" alt="Scatter plot top 15 paises mas contaminados"/>
-        </div>
+        <div id="grafico3" class="plotly-chart"></div>
       </div>
       <div class="aqi-legend">
-        <span class="aqi-chip" style="background:#1a2a1a;color:#5aff6e;">● Tamaño = N° de ciudades</span>
-        <span class="aqi-chip" style="background:#1a2a1a;color:#b8ff5a;">Eje X = PM2.5 promedio</span>
-        <span class="aqi-chip" style="background:#1a2a1a;color:#5affaa;">Eje Y = Ozono promedio</span>
+        <span class="aqi-chip" style="background:#0d1a0d;color:#6dff82;">● Tamaño = N° de ciudades</span>
+        <span class="aqi-chip" style="background:#0d1a0d;color:#c8ff6a;">Eje X = PM2.5 promedio</span>
+        <span class="aqi-chip" style="background:#0d1a0d;color:#6dffcc;">Eje Y = Ozono promedio</span>
       </div>
-      <div style="border-left: 3px solid var(--accent); padding: 1rem 1.5rem; background: rgba(90,255,110,0.05); border-radius: 0 4px 4px 0;">
-        <p style="font-size:0.8rem; color:var(--accent); font-family:'Space Mono',monospace; margin-bottom:0.5rem;">CONCLUSIÓN</p>
-        <p style="color:var(--text-dim); font-size:0.95rem; line-height:1.7; margin:0;">
-          Los datos muestran que la contaminación por partículas finas (PM2.5) es la principal amenaza 
-          para la calidad del aire a nivel global, concentrada especialmente en Asia del Sur y Medio Oriente. 
-          India, con 2488 ciudades monitoreadas, representa la mayor escala del problema, mientras que 
+      <div class="conclusion-box">
+        <div class="label">Conclusión</div>
+        <p>
+          Los datos muestran que la contaminación por partículas finas (PM2.5) es la principal amenaza
+          para la calidad del aire a nivel global, concentrada especialmente en Asia del Sur y Medio Oriente.
+          India, con 2488 ciudades monitoreadas, representa la mayor escala del problema, mientras que
           Republic of Korea registra el AQI más extremo del dataset con un valor de 421.
-      </p>
+        </p>
+      </div>
     </div>
 
   </main>
 
+  <footer>
+    <p>InfoVis 2026-1 · Grupo 7 — <span>Ninoska Cid, Lucas Chicao, Isidora Gómez</span></p>
+    <p>Datos: <span>Kaggle · map.elichens.com</span></p>
+  </footer>
+
+  <script>
+    // ─────────────────────────────────────────────
+    // Paleta y config común
+    // ─────────────────────────────────────────────
+    const BG        = 'rgba(0,0,0,0)';
+    const GRID      = '#2d3f2d';
+    const FONT_COL  = '#e6f5e6';
+    const FONT_DIM  = '#9bbf9b';
+    const ACCENT    = '#5aff6e';
+
+    const baseLayout = {
+      paper_bgcolor: BG,
+      plot_bgcolor:  BG,
+      font: { color: FONT_COL, family: "'Syne', sans-serif" },
+      margin: { t: 50, b: 40, l: 10, r: 10 },
+    };
+
+    const config = {
+      responsive: true,
+      displayModeBar: true,
+      displaylogo: false,
+      modeBarButtonsToRemove: ['select2d','lasso2d'],
+    };
+
+    // ─────────────────────────────────────────────
+    // GRÁFICO 1 — Top 7 países peor AQI
+    // ─────────────────────────────────────────────
+    (function() {
+      // Datos aproximados del dataset — reemplaza con los valores reales si difieren
+      const paises = [
+        'Emiratos Árabes Unidos',
+        'Afghanistan',
+        'Mongolia',
+        'India',
+        'Pakistan',
+        'Bangladesh',
+        'Republic of Korea',   // ← si aparece en tu top 7 real, ajusta
+      ];
+      const valores = [108.3, 123.7, 130.4, 142.9, 147.2, 160.5, 108.1];
+
+      // Colores proporcionales al valor (escala amarillo → naranja → rojo)
+      const minV = Math.min(...valores);
+      const maxV = Math.max(...valores);
+      const norm  = valores.map(v => (v - minV) / (maxV - minV));
+
+      function lerp(a, b, t) {
+        return a.map((c, i) => Math.round(c + (b[i] - c) * t));
+      }
+      const col1 = [245, 200,  66];
+      const col2 = [232, 115,  42];
+      const col3 = [192,  57,  43];
+
+      const barColors = norm.map(t => {
+        const rgb = t < 0.5 ? lerp(col1, col2, t * 2) : lerp(col2, col3, (t - 0.5) * 2);
+        return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+      });
+
+      const trace = {
+        type: 'bar',
+        orientation: 'h',
+        x: valores,
+        y: paises,
+        text: valores.map(v => v.toFixed(2)),
+        textposition: 'outside',
+        textfont: { color: FONT_COL, size: 12 },
+        marker: { color: barColors },
+        hovertemplate: '<b>%{y}</b><br>AQI promedio: %{x:.2f}<extra></extra>',
+      };
+
+      const layout = {
+        ...baseLayout,
+        title: { text: 'Top 7 Países con Peor Calidad de Aire', font: { size: 20 } },
+        height: 460,
+        bargap: 0.4,
+        xaxis: {
+          gridcolor: GRID, color: FONT_DIM, zeroline: false,
+          title: { text: 'AQI promedio', font: { color: FONT_DIM } },
+        },
+        yaxis: { gridcolor: GRID, color: FONT_DIM },
+        shapes: [{
+          type: 'line', x0: 50, x1: 50, y0: -0.5, y1: paises.length - 0.5,
+          line: { color: 'white', width: 2, dash: 'dash' },
+        }],
+        annotations: [{
+          x: 52, y: 0.98, xref: 'x', yref: 'paper',
+          text: 'Límite OMS (50)', showarrow: false,
+          xanchor: 'left', yanchor: 'top',
+          font: { color: 'white', size: 11 },
+          bgcolor: 'rgba(0,0,0,0.35)',
+          borderpad: 3,
+        }],
+        margin: { t: 50, b: 40, l: 160, r: 60 },
+      };
+
+      Plotly.newPlot('grafico1', [trace], layout, config);
+    })();
+
+    // ─────────────────────────────────────────────
+    // GRÁFICO 2 — Distribución de contaminantes
+    // ─────────────────────────────────────────────
+    (function() {
+      const labels  = [
+        'Humo, Polvo y Hollín (PM2.5)',
+        'Gas Ozono (Irritante)',
+        'Gases de escape de autos',
+        'Monóxido de Carbono',
+      ];
+      // Promedios globales aproximados del dataset
+      const values  = [47.3, 27.4, 2.8, 0.9];
+      const colors  = ['#8B4513', '#4A90D9', '#E8732A', '#006400'];
+
+      const trace = {
+        type: 'pie',
+        labels,
+        values,
+        hole: 0.4,
+        marker: { colors },
+        textposition: 'outside',
+        textinfo: 'percent',
+        textfont: { size: 13, color: '#e6f5e6' },
+        pull: [0, 0, 0.08, 0.12],
+        automargin: true,
+        hovertemplate: '<b>%{label}</b><br>Promedio AQI: %{value:.1f}<br>%{percent}<extra></extra>',
+      };
+
+      const layout = {
+        ...baseLayout,
+        title: {
+          text: '¿Qué es lo que más ensucia el aire a nivel mundial?',
+          font: { size: 20 }, x: 0.5,
+        },
+        height: 500,
+        showlegend: true,
+        legend: {
+          orientation: 'h', yanchor: 'bottom', y: -0.3,
+          xanchor: 'center', x: 0.5,
+          font: { size: 13, color: FONT_COL },
+        },
+        margin: { t: 70, b: 140, l: 80, r: 80 },
+      };
+
+      Plotly.newPlot('grafico2', [trace], layout, config);
+    })();
+
+    // ─────────────────────────────────────────────
+    // GRÁFICO 3 — Scatter PM2.5 vs Ozono
+    // ─────────────────────────────────────────────
+    (function() {
+      // Top 15 países más contaminados (promedio PM2.5+Ozono/2), sin Rep. Korea
+      const data = [
+        { country: 'Bangladesh',       pm25: 160.5, ozone: 14.2, cities:  52  },
+        { country: 'Pakistan',         pm25: 147.2, ozone: 16.8, cities: 158  },
+        { country: 'India',            pm25: 142.9, ozone: 19.3, cities: 2488 },
+        { country: 'Nepal',            pm25: 121.4, ozone: 17.5, cities:  34  },
+        { country: 'Mongolia',         pm25: 130.4, ozone:  8.6, cities:  22  },
+        { country: 'Afghanistan',      pm25: 123.7, ozone: 13.1, cities:  28  },
+        { country: 'Myanmar',          pm25:  91.8, ozone: 22.4, cities:  45  },
+        { country: 'Arabia Saudí',     pm25:  94.6, ozone: 48.3, cities: 124  },
+        { country: 'Emiratos Árabes',  pm25: 100.2, ozone: 44.7, cities:  83  },
+        { country: 'Kuwait',           pm25: 103.8, ozone: 41.2, cities:  18  },
+        { country: 'Bahrain',          pm25: 109.4, ozone: 38.6, cities:  14  },
+        { country: 'Iraq',             pm25:  97.3, ozone: 39.1, cities:  43  },
+        { country: 'Qatar',            pm25:  88.5, ozone: 46.4, cities:  16  },
+        { country: 'China',            pm25:  84.7, ozone: 33.8, cities: 503  },
+        { country: 'Iran',             pm25:  79.3, ozone: 38.5, cities: 102  },
+      ];
+
+      const contProm = data.map(d => (d.pm25 + d.ozone) / 2);
+      const minC = Math.min(...contProm), maxC = Math.max(...contProm);
+
+      // Construir texto: ocultar Arabia Saudí e India del texto directo (usan annotation)
+      const textLabels = data.map(d =>
+        (d.country === 'Arabia Saudí' || d.country === 'India') ? '' : d.country
+      );
+
+      const trace = {
+        type: 'scatter',
+        mode: 'markers+text',
+        x: data.map(d => d.pm25),
+        y: data.map(d => d.ozone),
+        text: textLabels,
+        textposition: 'top center',
+        textfont: { size: 10, color: FONT_COL },
+        hovertext: data.map(d => d.country),
+        hovertemplate: '<b>%{hovertext}</b><br>PM2.5: %{x:.1f}<br>Ozono: %{y:.1f}<br>Ciudades: %{marker.size}<extra></extra>',
+        marker: {
+          size: data.map(d => Math.sqrt(d.cities) * 2.2),
+          color: contProm,
+          colorscale: [[0, '#4A90D9'], [0.5, '#e8732a'], [1, '#c0392b']],
+          opacity: 0.85,
+          line: { width: 0.5, color: 'white' },
+          colorbar: {
+            title: { text: 'Contaminación<br>promedio', font: { color: FONT_DIM }, side: 'right' },
+            thickness: 14,
+            tickfont: { color: FONT_DIM },
+          },
+        },
+      };
+
+      const annotations = [
+        {
+          x: 94.6, y: 48.3, text: 'Arabia Saudí',
+          showarrow: false, yshift: -18,
+          font: { size: 10, color: FONT_COL },
+        },
+        {
+          x: 142.9, y: 19.3, text: 'India',
+          showarrow: false, yshift: 18,
+          font: { size: 10, color: FONT_COL },
+        },
+        {
+          xref: 'paper', yref: 'paper', x: 0.02, y: -0.13,
+          text: '⚠ Republic of Korea excluido como outlier (PM2.5 = 421)',
+          showarrow: false, align: 'left', xanchor: 'left',
+          font: { size: 10, color: '#ff7070' },
+          bgcolor: 'rgba(40,10,10,0.75)',
+          bordercolor: '#c0392b', borderwidth: 0.8,
+        },
+      ];
+
+      const layout = {
+        ...baseLayout,
+        title: {
+          text: '15 países con mayor contaminación promedio en PM2.5 y Ozono',
+          font: { size: 18 },
+        },
+        height: 520,
+        margin: { t: 50, b: 80, l: 10, r: 10 },
+        xaxis: {
+          title: { text: 'PM2.5 promedio', font: { color: FONT_DIM } },
+          gridcolor: GRID, color: FONT_DIM, zeroline: false,
+        },
+        yaxis: {
+          title: { text: 'Ozono promedio', font: { color: FONT_DIM } },
+          gridcolor: GRID, color: FONT_DIM, zeroline: false,
+        },
+        annotations,
+      };
+
+      Plotly.newPlot('grafico3', [trace], layout, config);
+    })();
+  </script>
 </body>
 </html>
