@@ -624,6 +624,7 @@
   <!-- Scripts -->
   <script src="./js/audioConfig.js"></script>
   <script src="./js/AudioManager.js"></script>
+  <script src="./js/SoundSonification.js"></script>
 
   <script>
     // =========================================
@@ -762,6 +763,39 @@
       };
 
       Plotly.newPlot('grafico1', [trace], layout, config);
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // AUDIO INTERACTIVO AL TOCAR UNA BARRA GRAFICO 1
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      
+        const grafico1El = document.getElementById('grafico1');
+        let lastHoveredCountry = null;
+        const sonification = new SoundSonification(audioManager.audioContext, audioManager.masterGain);
+        // Cuando el usuario tocar  una barra
+        grafico1El.on('plotly_hover', function(data) {
+          if (!data.points || data.points.length === 0) return;
+          const point = data.points[0];
+          const country = point.y; // País
+          const aqi = point.x;     // Valor AQI
+          // No reproducir múltiples veces
+          if (lastHoveredCountry === country) return;
+          lastHoveredCountry = country;
+          // Sonido según AQI
+          if (aqi < 50) {
+            sonification.playCleanSound();      // Verde - Bueno
+          } else if (aqi < 100) {
+            sonification.playClickSound(0.3);   // Amarillo - Moderado
+          } else if (aqi < 150) {
+            sonification.playClickSound(0.7);   // Naranja - Sensible
+          } else {
+            sonification.playWarningSound();    // Rojo - Peligroso
+          }
+        });
+
+      // Cuando sale del hover
+      grafico1El.on('plotly_unhover', function(data) {
+        lastHoveredCountry = null;
+      });
 
 
     })();
