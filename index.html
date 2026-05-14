@@ -38,6 +38,34 @@
       overflow-x: hidden;
     }
 
+    /* ── Botón estilizado ── */
+    .btn-accent {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--bg);
+      background: var(--accent);
+      border: 1px solid var(--accent-dim);
+      padding: 0.6rem 1.4rem;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 8px rgba(109,255,130,0.25);
+    }
+
+    .btn-accent:hover {
+      background: var(--accent2);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(200,255,106,0.35);
+    }
+
+    .btn-accent:active {
+      background: var(--accent-dim);
+      color: var(--text);
+      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    }
+
     /* ── Top bar ── */
     .topbar {
       width: 100%;
@@ -436,6 +464,8 @@
   <!-- top bar -->
   <div class="topbar">
     <span class="topbar-left">InfoVis 2026-1 · Grupo 7 · Contaminación Global del Aire</span>
+    <button id="activarAudio" class="btn-accent">Activar audio</button>
+    <button id="pausarAudio" class="btn-accent">Pausar audio</button>
     <div class="topbar-dot"></div>
   </div>
 
@@ -604,13 +634,33 @@
     // Crear instancia del AudioManager
     const audioManager = new AudioManager({
       audioPath: './audio/',
-      masterVolume: 0.6
+      masterVolume: 0.5
     });
 
     function updateAudioDebug(message) {
       audioDebugDiv.textContent = message;
       console.log(`[DEBUG] Sonido :D cual? nose`, message);
     }
+
+    document.getElementById("activarAudio").addEventListener("click", async () => {
+      await audioManager.audioContext.resume();
+      const traficoFile = getAudioFile('trafico');
+
+      if (traficoFile) {
+        await audioManager.playSound(traficoFile, 0.6);
+        updateAudioDebug(`[DEBUG] Efecto: ${traficoFile}`);
+        setTimeout(async () => {
+          await audioManager.playAmbience(traficoFile, 0.4);
+          updateAudioDebug(`[DEBUG] Loop: ${traficoFile}`);
+        }, 800);
+      }
+    });
+
+    document.getElementById("pausarAudio").addEventListener("click", () => {
+      audioManager.stopAmbience();
+      updateAudioDebug("[DEBUG] Audio pausado");
+
+    });
 
     if (audioManager.isInitialized) {
       updateAudioDebug("[DEBUG] AudioManager activo");
@@ -712,22 +762,7 @@
       };
 
       Plotly.newPlot('grafico1', [trace], layout, config);
-      const traficoFile = getAudioFile('trafico');
-      if (traficoFile) {
-        // Reproducir efecto
-        await audioManager.playSound(traficoFile, 0.6);
-        updateAudioDebug("[DEBUG]  Efecto: ${traficoFile}");
 
-        // Iniciar ambience después
-        setTimeout(async () => {
-          const ambience = await audioManager.playAmbience(traficoFile, 0.4);
-          updateAudioDebug("[DEBUG] Loop: ${traficoFile}");
-        }, 800);
-      } else {
-        updateAudioDebug('✗ Archivo no encontrado');
-      }
-
-      console.log(`[DEBUG] Gráfico 1 cargado`);
 
     })();
 
