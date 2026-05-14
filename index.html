@@ -845,6 +845,47 @@
       };
 
       Plotly.newPlot('grafico2', [trace], layout, config);
+
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // AUDIO INTERACTIVO AL HOVEAR DONA (GRÁFICO 2)
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      const grafico2El = document.getElementById('grafico2');
+      let lastHoveredContaminant = null;
+
+      // Mapeo: contaminante → archivo de audio
+      const contaminantSounds = {
+        'Humo, Polvo y Hollín (PM2.5)': 'Fondo_Fabricametalurgica.mp3',  // Industrial pesado
+        'Gas Ozono (Irritante)': 'Fondo_Fabricaindustrial.mp3',           // Fábrica
+        'Gases de escape de autos': 'Fondo_Trafico.mp3',                  // Tráfico
+        'Monóxido de Carbono': 'Fondo_Ciudad.mp3',                        // Ciudad
+      };
+
+      grafico2El.on('plotly_hover', function(data) {
+        if (!data.points || data.points.length === 0) return;
+
+        const point = data.points[0];
+        const label = point.label;
+        const value = point.value;
+
+        if (lastHoveredContaminant === label) return;
+        lastHoveredContaminant = label;
+
+        const audioFile = contaminantSounds[label];
+
+        if (audioFile) {
+          audioManager.playSound(audioFile, 0.5);
+          console.log(`[DEBUG] Hovering: ${label} → ${audioFile}`);
+        } else {
+          console.warn(`[DEBUG] No hay audio para: ${label}`);  
+        }
+      });
+
+      grafico2El.on('plotly_unhover', function(data) {
+        lastHoveredContaminant = null;
+      });
+
+      console.log('[DEBUG] Gráfico 2 con audio interactivo');
     })();
 
     // ─────────────────────────────────────────────
