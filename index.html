@@ -648,10 +648,10 @@
       const traficoFile = getAudioFile('ciudad'); //aun que se muestre como traficofile es el de ciudad, me da lata cambiar todas las instancias de dicha variable #VivaLasMalasPracticas
 
       if (traficoFile) {
-        await audioManager.playSound(traficoFile, 0.6);
+        await audioManager.playSound(traficoFile, 0.2);
         updateAudioDebug(`[DEBUG] Efecto: ${traficoFile}`);
         setTimeout(async () => {
-          await audioManager.playAmbience(traficoFile, 0.4);
+          await audioManager.playAmbience(traficoFile, 0.2);
           updateAudioDebug(`[DEBUG] Loop: ${traficoFile}`);
         }, 800);
       }
@@ -767,7 +767,7 @@
       // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
       // AUDIO INTERACTIVO AL TOCAR UNA BARRA GRAFICO 1
       // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      
+
         const grafico1El = document.getElementById('grafico1');
         let lastHoveredCountry = null;
         const sonification = new SoundSonification(audioManager.audioContext, audioManager.masterGain);

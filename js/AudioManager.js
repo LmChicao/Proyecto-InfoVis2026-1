@@ -123,7 +123,7 @@ class AudioManager {
    * @param {boolean} loop - Si debe hacer loop
    * @returns {Object} Objeto con source y gainNode para controlar
    */
-  async playAmbience(fileName, volume = 0.3, loop = true) {
+  async playAmbience(fileName, volume = 0.1, loop = true) {
     if (!this.isInitialized) {
       console.warn(`[DEBUG] AudioContext no inicializado`);
       return null;
