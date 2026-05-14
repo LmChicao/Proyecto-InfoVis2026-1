@@ -110,6 +110,11 @@ class AudioManager {
 
       // Reproducir
       source.start(0);
+      this.playingAudios[fileName] = {
+      source: source,
+      gainNode: gainNode,
+      isPlaying: true
+      };
       console.log(`[DEBUG] Reproduciendo: ${fileName} (vol: ${volume})`);
     } catch (e) {
       console.error(`[DEBUG] Error reproduciendo sonido:`, e.message);
