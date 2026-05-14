@@ -585,11 +585,15 @@
     <p>InfoVis 2026-1 · Grupo 7 — <span>Ninoska Cid, Lucas Chicao, Isidora Gómez</span></p>
     <p>Datos: <span>Kaggle · map.elichens.com</span></p>
   </footer>
+  <!-- Panel debug de audio -->
+  <div id="audioDebug">
+    <div><strong>[DEBUG] AudioManager</strong></div>
+    <div id="audioStatus" style="margin-top: 8px; font-size: 0.7rem;">Iniciando...</div>
+  </div>
 
-
-    <!-- Scripts -->
-    <script src="./js/audioConfig.js"></script>
-    <script src="./js/AudioManager.js"></script>
+  <!-- Scripts -->
+  <script src="./js/audioConfig.js"></script>
+  <script src="./js/AudioManager.js"></script>
 
   <script>
     // =========================================
@@ -605,7 +609,7 @@
 
     function updateAudioDebug(message) {
       audioDebugDiv.textContent = message;
-      console.log('[DEBUG] Sonido :D cual? nose', message);
+      console.log("[DEBUG] Sonido :D cual? nose", message);
     }
 
     if (audioManager.isInitialized) {
