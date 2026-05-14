@@ -609,7 +609,7 @@
 
     function updateAudioDebug(message) {
       audioDebugDiv.textContent = message;
-      console.log("[DEBUG] Sonido :D cual? nose", message);
+      console.log(`[DEBUG] Sonido :D cual? nose`, message);
     }
 
     if (audioManager.isInitialized) {
@@ -727,7 +727,7 @@
         updateAudioDebug('✗ Archivo no encontrado');
       }
 
-      console.log('✓ Gráfico 1 cargado');
+      console.log(`[DEBUG] Gráfico 1 cargado`);
 
     })();
 

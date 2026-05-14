@@ -38,10 +38,10 @@ class AudioManager {
       this.masterGain.connect(this.audioContext.destination);
       
       this.isInitialized = true;
-      console.log("[DEBUG] AudioManager inicializado correctamente");
+      console.log(`[DEBUG] AudioManager inicializado correctamente`);
       return true;
     } catch (e) {
-      console.error("[DEBUG] Error al inicializar AudioContext:", e.message);
+      console.error(`[DEBUG] Error al inicializar AudioContext:`, e.message);
       this.isInitialized = false;
       return false;
     }
@@ -55,17 +55,17 @@ class AudioManager {
   async loadAudio(fileName) {
     // Si ya está cargado, retornarlo
     if (this.audioBuffers[fileName]) {
-      console.log(`✓ Audio en cache: ${fileName}`);
+      console.log(`[DEBUG] Audio en cache: ${fileName}`);
       return this.audioBuffers[fileName];
     }
 
     try {
       const filePath = this.audioPath + fileName;
-      console.log("[DEBUG] Cargando: ${filePath}");
+      console.log(`[DEBUG] Cargando: ${filePath}`);
       
       const response = await fetch(filePath);
       if (!response.ok) {
-        throw new Error("[DEBUG] HTTP Error: ${response.status}");
+        throw new Error(`[DEBUG] HTTP Error: ${response.status}`);
       }
       
       const arrayBuffer = await response.arrayBuffer();
@@ -73,11 +73,11 @@ class AudioManager {
       
       // Guardar en cache
       this.audioBuffers[fileName] = audioBuffer;
-      console.log("[DEBUG] Audio cargado: ${fileName}");
+      console.log(`[DEBUG] Audio cargado: ${fileName}`);
       
       return audioBuffer;
     } catch (e) {
-      console.error("[DEBUG] Error cargando ${fileName}:", e.message);
+      console.error(`[DEBUG] Error cargando ${fileName}:`, e.message);
       return null;
     }
   }
@@ -89,7 +89,7 @@ class AudioManager {
    */
   async playSound(fileName, volume = 0.5) {
     if (!this.isInitialized) {
-      console.warn("[DEBUG] AudioContext no inicializado");
+      console.warn(`[DEBUG] AudioContext no inicializado`);
       return;
     }
 
@@ -110,9 +110,9 @@ class AudioManager {
 
       // Reproducir
       source.start(0);
-      console.log("[DEBUG] Reproduciendo: ${fileName} (vol: ${volume})");
+      console.log(`[DEBUG] Reproduciendo: ${fileName} (vol: ${volume})`);
     } catch (e) {
-      console.error("[DEBUG] Error reproduciendo sonido:", e.message);
+      console.error(`[DEBUG] Error reproduciendo sonido:`, e.message);
     }
   }
 
@@ -125,7 +125,7 @@ class AudioManager {
    */
   async playAmbience(fileName, volume = 0.3, loop = true) {
     if (!this.isInitialized) {
-      console.warn("[DEBUG] AudioContext no inicializado");
+      console.warn(`[DEBUG] AudioContext no inicializado`);
       return null;
     }
 
@@ -147,7 +147,7 @@ class AudioManager {
 
       // Reproducir
       source.start(0);
-      console.log("[DEBUG] Ambience iniciada: ${fileName} (loop: ${loop})");
+      console.log(`[DEBUG] Ambience iniciada: ${fileName} (loop: ${loop})`);
 
       // Guardar referencia para control posterior
       this.playingAudios[fileName] = {
@@ -167,12 +167,12 @@ class AudioManager {
             source.stop();
             this.playingAudios[fileName].isPlaying = false;
           } catch (e) {
-            console.warn("[DEBUG] Audio ya detenido");
+            console.warn(`[DEBUG] Audio ya detenido`);
           }
         }
       };
     } catch (e) {
-      console.error("[DEBUG] Error reproduciendo ambience:", e.message);
+      console.error(`[DEBUG] Error reproduciendo ambience:`, e.message);
       return null;
     }
   }
@@ -195,7 +195,7 @@ class AudioManager {
   setMasterVolume(volume) {
     this.masterVolume = Math.max(0, Math.min(1, volume));
     this.masterGain.gain.value = this.masterVolume;
-    console.log("[DEBUG] Volumen maestro: ${Math.round(this.masterVolume * 100)}%");
+    console.log(`[DEBUG] Volumen maestro: ${Math.round(this.masterVolume * 100)}%`);
   }
 
   /**
@@ -215,11 +215,11 @@ class AudioManager {
           this.playingAudios[fileName].source.stop();
           this.playingAudios[fileName].isPlaying = false;
         } catch (e) {
-          console.warn("[DEBUG] No se pudo detener ${fileName}");
+          console.warn(`[DEBUG] No se pudo detener ${fileName}`);
         }
       }
     });
-    console.log("[DEBUG] Todos los audios detenidos");
+    console.log(`[DEBUG] Todos los audios detenidos`);
   }
 }
 
