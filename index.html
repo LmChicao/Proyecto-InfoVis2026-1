@@ -467,7 +467,7 @@
     </div>
   </header>
 
-  <!-- ══ STATS BAR ══ -->
+  <!-- ══ Datos generales ══ -->
   <div class="stats-bar">
     <div class="stat">
       <div class="stat-num">23.463</div>
@@ -586,9 +586,25 @@
     <p>Datos: <span>Kaggle · map.elichens.com</span></p>
   </footer>
 
+
+    <!-- Scripts -->
+    <script src="./js/audioConfig.js"></script>
+    <script src="./js/AudioManager.js"></script>
+
   <script>
+    // =========================================
+    // INICIALIZACIÓN DE AUDIO
+    // =========================================
+    
+
+    // Crear instancia del AudioManager
+    const audioManager = new AudioManager({
+      audioPath: './audio/',
+      masterVolume: 0.6
+    });
+
     // ─────────────────────────────────────────────
-    // Paleta y config común
+    // Paleta y config común de graficos
     // ─────────────────────────────────────────────
     const BG        = 'rgba(0,0,0,0)';
     const GRID      = '#2d3f2d';
@@ -613,7 +629,7 @@
     // ─────────────────────────────────────────────
     // GRÁFICO 1 — Top 7 países peor AQI
     // ─────────────────────────────────────────────
-    (function() {
+    (async function() {
       // Datos aproximados del dataset — reemplaza con los valores reales si difieren
       const paises = [
         'Emiratos Árabes Unidos',
@@ -681,6 +697,19 @@
       };
 
       Plotly.newPlot('grafico1', [trace], layout, config);
+
+      const traficoFile = getAudioFile('trafico');
+      if (traficoFile) {
+        // Reproducir efecto
+        await audioManager.playSound(traficoFile, 0.6);
+        // Iniciar ambience después
+        setTimeout(async () => {
+          const ambience = await audioManager.playAmbience(traficoFile, 0.4);
+        }, 800);
+      } else {
+        
+      }
+
     })();
 
     // ─────────────────────────────────────────────
