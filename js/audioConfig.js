@@ -19,7 +19,7 @@ const AUDIO_FILES = {
 function getAudioFile(key) {
   const fileName = AUDIO_FILES[key];
   if (!fileName) {
-    console.warn(`⚠ Audio no encontrado: ${key}`);
+    console.warn("[DEBUG]Audio no encontrado: ${key}");
     return null;
   }
   return fileName;

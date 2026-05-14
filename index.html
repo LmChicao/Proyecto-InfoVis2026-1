@@ -595,13 +595,24 @@
     // =========================================
     // INICIALIZACIÓN DE AUDIO
     // =========================================
-    
+    const audioDebugDiv = document.getElementById('audioStatus');
 
     // Crear instancia del AudioManager
     const audioManager = new AudioManager({
       audioPath: './audio/',
       masterVolume: 0.6
     });
+
+    function updateAudioDebug(message) {
+      audioDebugDiv.textContent = message;
+      console.log('[DEBUG] Sonido :D cual? nose', message);
+    }
+
+    if (audioManager.isInitialized) {
+      updateAudioDebug("[DEBUG] AudioManager activo");
+    } else {
+      updateAudioDebug("[DEBUG] Error inicializando audio");
+    }
 
     // ─────────────────────────────────────────────
     // Paleta y config común de graficos
@@ -697,18 +708,22 @@
       };
 
       Plotly.newPlot('grafico1', [trace], layout, config);
-
       const traficoFile = getAudioFile('trafico');
       if (traficoFile) {
         // Reproducir efecto
         await audioManager.playSound(traficoFile, 0.6);
+        updateAudioDebug("[DEBUG]  Efecto: ${traficoFile}");
+
         // Iniciar ambience después
         setTimeout(async () => {
           const ambience = await audioManager.playAmbience(traficoFile, 0.4);
+          updateAudioDebug("[DEBUG] Loop: ${traficoFile}");
         }, 800);
       } else {
-        
+        updateAudioDebug('✗ Archivo no encontrado');
       }
+
+      console.log('✓ Gráfico 1 cargado');
 
     })();
 
