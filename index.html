@@ -464,8 +464,8 @@
   <!-- top bar -->
   <div class="topbar">
     <span class="topbar-left">InfoVis 2026-1 · Grupo 7 · Contaminación Global del Aire</span>
-    <button id="activarAudio" class="btn-accent">Activar audio</button>
-    <button id="pausarAudio" class="btn-accent">Pausar audio</button>
+    <button id="activarAudio" class="btn-accent">Activar audio general</button>
+    <button id="pausarAudio" class="btn-accent">Pausar audio general</button>
     <div class="topbar-dot"></div>
   </div>
 
@@ -644,7 +644,7 @@
 
     document.getElementById("activarAudio").addEventListener("click", async () => {
       await audioManager.audioContext.resume();
-      const traficoFile = getAudioFile('trafico');
+      const traficoFile = getAudioFile('ciudad'); //aun que se muestre como traficofile es el de ciudad, me da lata cambiar todas las instancias de dicha variable #VivaLasMalasPracticas
 
       if (traficoFile) {
         await audioManager.playSound(traficoFile, 0.6);
