@@ -852,6 +852,7 @@
 
       const grafico2El = document.getElementById('grafico2');
       let lastHoveredContaminant = null;
+      let currentPlayingSound = null;
       
 
       // Mapeo: contaminante → archivo de audio
@@ -883,8 +884,6 @@
               // Reproducir el nuevo sonido
               audioManager.playSound(audioFile, 0.5);
               currentPlayingSound = audioFile;
-              
-              console.log(`[DEBUG] Cambio: ${lastHoveredContaminant} → ${label} (${audioFile})`);
             }
           } else {
             console.warn(`[DEBUG] No hay audio para: ${label}`);
