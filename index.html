@@ -993,6 +993,65 @@
       };
 
       Plotly.newPlot('grafico3', [trace], layout, config);
+      
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      // AUDIO INTERACTIVO GRAFICO 3
+      // PM2.5 + Ozono = tono dinámico
+      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      const grafico3El = document.getElementById('grafico3');
+
+      let lastHoveredCountry3 = null;
+
+      const sonification3 = new SoundSonification(
+        audioManager.audioContext,
+        audioManager.masterGain
+      );
+
+      grafico3El.on('plotly_hover', function(data) {
+
+        if (!data.points || data.points.length === 0) return;
+
+        const point = data.points[0];
+
+        const country = point.hovertext;
+        const pm25 = point.x;
+        const ozone = point.y;
+
+        // evitar repetir spam del mismo hover
+        if (lastHoveredCountry3 === country) return;
+
+        lastHoveredCountry3 = country;
+
+        // contaminación combinada
+        const combinedAQI = (pm25 + ozone) / 2;
+
+        // tono principal basado en contaminación
+        sonification3.playAQITone(combinedAQI, 0.4);
+
+        // ozone alto = click más agudo
+        const ozonePitch = Math.min(ozone / 50, 1);
+
+        setTimeout(() => {
+          sonification3.playClickSound(ozonePitch);
+        }, 120);
+
+        // extremadamente contaminado
+        if (combinedAQI > 90) {
+          setTimeout(() => {
+            sonification3.playWarningSound();
+          }, 220);
+        }
+
+        console.log(
+          `[DEBUG] ${country} | PM2.5=${pm25} | Ozone=${ozone}`
+        );
+      });
+
+      grafico3El.on('plotly_unhover', function() {
+        lastHoveredCountry3 = null;
+      });
+
     })();
   </script>
 </body>
