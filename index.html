@@ -733,11 +733,7 @@
       }
     });
 
-    document.getElementById("pausarAudio").addEventListener("click", () => {
-      audioManager.stopAll();
-      updateAudioDebug("[DEBUG] Audio pausado");
-
-    });
+    
 
     if (audioManager.isInitialized) {
       updateAudioDebug("[DEBUG] AudioManager activo");
