@@ -111,8 +111,8 @@ class AudioManager {
       // Reproducir
       source.start(0);
       
-      if (duration > 0) {
-        source.stop(this.audioContext.currentTime + duration);
+      if (duracion > 0) {
+        source.stop(this.audioContext.currentTime + duracion);
       }
 
       this.playingAudios[fileName] = {
