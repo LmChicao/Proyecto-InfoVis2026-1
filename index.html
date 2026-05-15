@@ -648,7 +648,7 @@
       const traficoFile = getAudioFile('ciudad'); //aun que se muestre como traficofile es el de ciudad, me da lata cambiar todas las instancias de dicha variable #VivaLasMalasPracticas
 
       if (traficoFile) {
-        await audioManager.playSound(traficoFile, 0.2);
+        await audioManager.playSound(traficoFile, 0.2, 5);
         updateAudioDebug(`[DEBUG] Efecto: ${traficoFile}`);
         setTimeout(async () => {
           await audioManager.playAmbience(traficoFile, 0.2);
@@ -882,7 +882,7 @@
               audioManager.stopAll();
               
               // Reproducir el nuevo sonido
-              audioManager.playSound(audioFile, 0.5);
+              audioManager.playSound(audioFile, 0.5, 5);
               currentPlayingSound = audioFile;
             }
           } else {
