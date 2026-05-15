@@ -25,15 +25,36 @@ class SoundSonification {
       const normalized = Math.min(aqi / 150, 1);
 
       // Mapear a frecuencia (200 Hz bajo a 800 Hz alto)
-      const baseFreq = 200;
-      const maxFreq = 800;
-      const frequency = baseFreq + (maxFreq - baseFreq) * normalized;
+      let frequency;
+
+      // Rangos MUCHO más diferenciables
+      if (aqi < 50) {
+        frequency = 220; // grave limpio
+      }
+      else if (aqi < 80) {
+        frequency = 320;
+      }
+      else if (aqi < 120) {
+        frequency = 440; // LA musical
+      }
+      else if (aqi < 150) {
+        frequency = 620;
+      }
+      else {
+        frequency = 880; // muy agudo/peligroso
+      }
 
       // Crear oscilador
       const osc = this.audioContext.createOscillator();
       const gain = this.audioContext.createGain();
 
-      osc.type = 'sine';
+      if (aqi < 80) {
+          osc.type = 'sine';
+        } else if (aqi < 120) {
+          osc.type = 'triangle';
+        } else {
+          osc.type = 'sawtooth';
+        }
       osc.frequency.value = frequency;
 
       // Envelope (ADSR simplificado)

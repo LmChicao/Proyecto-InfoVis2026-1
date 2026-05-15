@@ -38,6 +38,42 @@
       overflow-x: hidden;
     }
 
+    .info-panel {
+      margin: 0 2rem 2rem;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+
+      animation: fadeUp 0.3s ease;
+    }
+
+    .info-card {
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      padding: 1rem;
+    }
+
+    .info-card h3 {
+      color: var(--accent);
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+    }
+
+    .info-card p {
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+
     /* ── Botón estilizado ── */
     .btn-accent {
       font-family: 'Space Mono', monospace;
@@ -552,32 +588,72 @@
     <!-- ══ GRÁFICO 2 ══ -->
     <div class="section-divider"><span>Visualización 02 — Composición</span></div>
 
-    <div class="chart-card">
-      <div class="chart-header">
-        <div class="chart-number">02</div>
-        <div class="chart-title-block">
-          <h2>¿Qué es lo que más ensucia el aire a nivel mundial?</h2>
-          <p>Distribución porcentual del promedio de cada contaminante: PM2.5, Ozono, NO₂ y CO.</p>
-        </div>
-      </div>
-      <div class="chart-body">
-        <div id="grafico2" class="plotly-chart"></div>
-      </div>
-      <div class="aqi-legend">
-        <span class="aqi-chip" style="background:#1a1208;color:#c87a40;">Humo, Polvo y Hollín (PM2.5)</span>
-        <span class="aqi-chip" style="background:#0a1525;color:#5ab4ff;">Gas Ozono (Irritante)</span>
-        <span class="aqi-chip" style="background:#1f1108;color:#ffaa5a;">Gases de escape (NO₂)</span>
-        <span class="aqi-chip" style="background:#081508;color:#5aff8a;">Monóxido de Carbono (CO)</span>
-      </div>
+<div class="chart-card">
+  <div class="chart-header">
+    <div class="chart-number">02</div>
+    <div class="chart-title-block">
+      <h2>¿Qué es lo que más ensucia el aire a nivel mundial?</h2>
+      <p>Distribución porcentual del promedio de cada contaminante: PM2.5, Ozono, NO₂ y CO.</p>
     </div>
+  </div>
 
-    <div class="narrative-wrap">
-      <div class="narrative-icon">↓</div>
-      <p class="narrative">
-        Con PM2.5 representando el 63% de la contaminación promedio global,
-        ¿qué países concentran simultáneamente los peores niveles de PM2.5 y Ozono?
+  <div class="chart-body">
+    <div id="grafico2" class="plotly-chart"></div>
+  </div>
+
+  <div class="aqi-legend">
+    <span class="aqi-chip" style="background:#1a1208;color:#c87a40;">Humo, Polvo y Hollín (PM2.5)</span>
+    <span class="aqi-chip" style="background:#0a1525;color:#5ab4ff;">Gas Ozono (Irritante)</span>
+    <span class="aqi-chip" style="background:#1f1108;color:#ffaa5a;">Gases de escape (NO₂)</span>
+    <span class="aqi-chip" style="background:#081508;color:#5aff8a;">Monóxido de Carbono (CO)</span>
+  </div>
+
+  <!-- NUEVO -->
+  <div style="padding: 0 2rem 1.5rem;">
+    <button id="toggleContaminantes" class="btn-accent">
+      Ver información de contaminantes
+    </button>
+  </div>
+
+  <!-- PANEL DESPLEGABLE -->
+  <div id="panelContaminantes" class="info-panel hidden">
+
+    <div class="info-card">
+      <h3>PM2.5</h3>
+      <p>
+        Partículas microscópicas presentes en humo, polvo y combustión.
+        Son el principal contaminante global y pueden ingresar profundamente
+        en los pulmones.
       </p>
     </div>
+
+    <div class="info-card">
+      <h3>Ozono (O₃)</h3>
+      <p>
+        Gas irritante formado por reacciones químicas en la atmósfera.
+        Puede causar problemas respiratorios y daño pulmonar.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>Dióxido de Nitrógeno (NO₂)</h3>
+      <p>
+        Generado principalmente por vehículos y combustibles fósiles.
+        Está asociado a tráfico urbano e industrias.
+      </p>
+    </div>
+
+    <div class="info-card">
+      <h3>Monóxido de Carbono (CO)</h3>
+      <p>
+        Gas tóxico producido por combustión incompleta.
+        Altas concentraciones reducen el transporte de oxígeno en el cuerpo.
+      </p>
+    </div>
+
+  </div>
+
+</div>
 
     <!-- ══ GRÁFICO 3 ══ -->
     <div class="section-divider"><span>Visualización 03 — Relación entre contaminantes</span></div>
@@ -781,15 +857,7 @@
           if (lastHoveredCountry === country) return;
           lastHoveredCountry = country;
           // Sonido según AQI
-          if (aqi < 50) {
-            sonification.playCleanSound();      // Verde - Bueno
-          } else if (aqi < 100) {
-            sonification.playClickSound(0.3);   // Amarillo - Moderado
-          } else if (aqi < 150) {
-            sonification.playClickSound(0.7);   // Naranja - Sensible
-          } else {
-            sonification.playWarningSound();    // Rojo - Peligroso
-          }
+          sonification.playAQITone(aqi);
         });
 
       // Cuando sale del hover
@@ -1053,6 +1121,21 @@
       });
 
     })();
+
+  const toggleBtn = document.getElementById('toggleContaminantes');
+  const panel = document.getElementById('panelContaminantes');
+
+  toggleBtn.addEventListener('click', () => {
+
+    panel.classList.toggle('hidden');
+
+    if (panel.classList.contains('hidden')) {
+      toggleBtn.textContent = 'Ver información de contaminantes';
+    } else {
+      toggleBtn.textContent = 'Ocultar información';
+    }
+
+  });
   </script>
 </body>
 </html>
