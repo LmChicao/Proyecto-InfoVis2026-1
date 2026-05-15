@@ -87,7 +87,7 @@ class AudioManager {
    * @param {string} fileName - Nombre del archivo
    * @param {number} volume - Volumen (0-1)
    */
-  async playSound(fileName, volume = 0.5) {
+  async playSound(fileName, volume = 0.5, duracion = 5) {
     if (!this.isInitialized) {
       console.warn(`[DEBUG] AudioContext no inicializado`);
       return;
@@ -110,15 +110,23 @@ class AudioManager {
 
       // Reproducir
       source.start(0);
+      
+      if (duration > 0) {
+        source.stop(this.audioContext.currentTime + duration);
+      }
+
       this.playingAudios[fileName] = {
       source: source,
       gainNode: gainNode,
       isPlaying: true
       };
-      console.log(`[DEBUG] Reproduciendo: ${fileName} (vol: ${volume})`);
+      console.log(`[DEBUG] Reproduciendo: ${fileName} (vol: ${volume}) durante 5 segundos`);
     } catch (e) {
       console.error(`[DEBUG] Error reproduciendo sonido:`, e.message);
     }
+
+    
+
   }
 
   /**
