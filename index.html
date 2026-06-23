@@ -8,19 +8,19 @@
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     :root {
-      --bg:        #2a4a2a;
-      --bg2:       #2e502e;
-      --card:      #1e2e1e;
-      --card2:     #223222;
-      --border:    #3a5a3a;
-      --border2:   #446044;
-      --accent:    #6dff82;
-      --accent2:   #c8ff6a;
-      --accent-dim:#3a7040;
-      --danger:    #e8732a;
-      --text:      #eaf5ea;
-      --text-dim:  #9bbf9b;
-      --text-faint:#5a8a5a;
+      --bg:        #16263f;  /* azul profundo */
+      --bg2:       #1b2f4d;
+      --card:      #f4ecd9;  /* tarjetas crema / hueso */
+      --card2:     #e9ddc1;  /* encabezados crema */
+      --border:    #2c456b;
+      --border2:   #3a557d;
+      --accent:    #f1e6c8;  /* crema / hueso */
+      --accent2:   #fff3d4;
+      --accent-dim:#3f5c87;
+      --danger:    #e8902a;  /* ámbar (seguro para daltonismo junto al azul) */
+      --text:      #f0e9d6;  /* texto crema */
+      --text-dim:  #aebfd6;
+      --text-faint:#5d7298;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,8 +29,8 @@
     body {
       background-color: var(--bg);
       background-image:
-        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(60,110,60,0.4) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 90% 100%, rgba(40,80,40,0.3) 0%, transparent 55%),
+        radial-gradient(ellipse 80% 60% at 10% 0%, rgba(50,90,150,0.40) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 90% 100%, rgba(35,65,120,0.30) 0%, transparent 55%),
         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
       color: var(--text);
       font-family: 'Syne', sans-serif;
@@ -909,97 +909,43 @@
     // GRÁFICO 2 — Distribución de contaminantes
     // ─────────────────────────────────────────────
     (function() {
-      const labels  = [
-        'Humo, Polvo y Hollín (PM2.5)',
-        'Gas Ozono (Irritante)',
-        'Gases de escape de autos',
-        'Monóxido de Carbono',
-      ];
-      // Promedios globales aproximados del dataset
-      const values  = [47.3, 27.4, 2.8, 0.9];
-      const colors  = ['#8B4513', '#4A90D9', '#E8732A', '#006400'];
+      // El gráfico 2 ahora es un WAFFLE hecho con HTML/CSS (ver el div #grafico2).
+      // No se usa Plotly aquí. Solo reconectamos el audio al pasar el mouse
+      // sobre las celdas, agrupadas por su clase de color (c1–c4).
 
-      const trace = {
-        type: 'pie',
-        labels,
-        values,
-        hole: 0.4,
-        marker: { colors },
-        textposition: 'outside',
-        textinfo: 'percent',
-        textfont: { size: 13, color: '#e6f5e6' },
-        pull: [0, 0, 0.08, 0.12],
-        automargin: true,
-        hovertemplate: '<b>%{label}</b><br>Promedio AQI: %{value:.1f}<br>%{percent}<extra></extra>',
+      // Mapeo: clase de celda → contaminante + archivo de audio
+      const cellSounds = {
+        c1: { label: 'Humo, Polvo y Hollín (PM2.5)', file: 'Fondo_Fabricametalurgica.mp3' }, // Industrial pesado
+        c2: { label: 'Gas Ozono (Irritante)',        file: 'Fondo_Fabricaindustrial.mp3'  }, // Fábrica
+        c3: { label: 'Gases de escape (NO₂)',         file: 'Fondo_Trafico.mp3'            }, // Tráfico
+        c4: { label: 'Monóxido de Carbono (CO)',      file: 'Sonido_Fuego.mp3'             }, // Fuego
       };
 
-      const layout = {
-        ...baseLayout,
-        title: {
-          text: '¿Qué es lo que más ensucia el aire a nivel mundial?',
-          font: { size: 20 }, x: 0.5,
-        },
-        height: 500,
-        showlegend: true,
-        legend: {
-          orientation: 'h', yanchor: 'bottom', y: -0.3,
-          xanchor: 'center', x: 0.5,
-          font: { size: 13, color: FONT_COL },
-        },
-        margin: { t: 70, b: 140, l: 80, r: 80 },
-      };
-
-      Plotly.newPlot('grafico2', [trace], layout, config);
-
-      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-      // AUDIO INTERACTIVO AL HOVEAR DONA (GRÁFICO 2)
-      // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-      const grafico2El = document.getElementById('grafico2');
-      let lastHoveredContaminant = null;
       let currentPlayingSound = null;
-      
 
-      // Mapeo: contaminante → archivo de audio
-      const contaminantSounds = {
-        'Humo, Polvo y Hollín (PM2.5)': 'Fondo_Fabricametalurgica.mp3',  // Industrial pesado
-        'Gas Ozono (Irritante)': 'Fondo_Fabricaindustrial.mp3',           // Fábrica
-        'Gases de escape de autos': 'Fondo_Trafico.mp3',                  // Tráfico
-        'Monóxido de Carbono': 'Sonido_Fuego.mp3',                        // Ciudad
-      };
+      const celdas = document.querySelectorAll('#grafico2 i');
 
-        grafico2El.on('plotly_hover', function(data) {
-          if (!data.points || data.points.length === 0) return;
-      
-          const point = data.points[0];
-          const label = point.label;
-      
+      celdas.forEach(celda => {
+        // Tooltip nativo al pasar el mouse
+        const claseColor = ['c1', 'c2', 'c3', 'c4'].find(c => celda.classList.contains(c));
+        const info = cellSounds[claseColor];
+        if (info) celda.title = info.label;
+
+        celda.addEventListener('mouseenter', function() {
+          if (!info) return;
+          const audioFile = info.file;
           // Evitar reproducir el MISMO sonido si ya está sonando
-          if (lastHoveredContaminant === label) return;
-          lastHoveredContaminant = label;
-      
-          const audioFile = contaminantSounds[label];
-      
-          if (audioFile) {
-            // Detiene si el sonido anterior ya se esta ejecutando
-            if (currentPlayingSound !== audioFile) {
-              // Se detiene todos los sonidos (para que no se sobrepongan)
-              audioManager.stopAll();
-              
-              // Reproducir el nuevo sonido
-              audioManager.playSound(audioFile, 0.8, 5);
-              currentPlayingSound = audioFile;
-            }
-          } else {
-            console.warn(`[DEBUG] No hay audio para: ${label}`);
+          if (currentPlayingSound === audioFile) return;
+
+          if (typeof audioManager !== 'undefined' && audioManager.audioContext) {
+            audioManager.stopAll();
+            audioManager.playSound(audioFile, 0.8, 5);
+            currentPlayingSound = audioFile;
           }
         });
-
-      grafico2El.on('plotly_unhover', function(data) {
-        lastHoveredContaminant = null;
       });
 
-      console.log('[DEBUG] Gráfico 2 con audio interactivo');
+      console.log('[DEBUG] Gráfico 2 (waffle) con audio interactivo');
     })();
 
     // ─────────────────────────────────────────────
