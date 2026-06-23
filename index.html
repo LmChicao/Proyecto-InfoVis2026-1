@@ -598,8 +598,24 @@
   </div>
 
   <div class="chart-body">
-    <!-- El waffle se genera dentro de este div -->
-    <div id="grafico2" class="plotly-chart"></div>
+    <div id="grafico2" class="waffle-grid">
+      <!-- PM2.5 (60.3%) → 60 celdas -->
+      <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+      <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+      <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+      <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+      <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+      <i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i><i class="c1"></i>
+      <!-- Ozono (34.9%) → 35 celdas -->
+      <i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i>
+      <i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i>
+      <i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i>
+      <i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i><i class="c2"></i>
+      <!-- NO₂ (3.57%) → 4 celdas -->
+      <i class="c3"></i><i class="c3"></i><i class="c3"></i><i class="c3"></i>
+      <!-- CO (1.15%) → 1 celda -->
+      <i class="c4"></i>
+    </div>
   </div>
 
   <div class="aqi-legend">
@@ -609,13 +625,6 @@
     <span class="aqi-chip" style="background:#081508;color:#5aff8a;">Monóxido de Carbono (CO)</span>
   </div>
 
-  <div style="padding: 0 2rem 1.5rem;">
-    <button id="toggleContaminantes" class="btn-accent">
-      Ver información de contaminantes
-    </button>
-  </div>
-
-  <!-- NUEVO -->
   <div style="padding: 0 2rem 1.5rem;">
     <button id="toggleContaminantes" class="btn-accent">
       Ver información de contaminantes
