@@ -375,6 +375,31 @@
     .plotly-chart { width: 100%; }
     .plotly-chart > div { width: 100% !important; }
 
+    /* ── Waffle grid (Gráfico 02) ── */
+    .waffle-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+      max-width: 360px;
+      margin: 0 auto;
+      padding: 0.5rem 0 1rem;
+    }
+    .waffle-grid i {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      display: block;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .waffle-grid i:hover {
+      transform: scale(1.18);
+      box-shadow: 0 0 6px rgba(0,0,0,0.4);
+    }
+    .waffle-grid .c1 { background: #c87a40; }  /* PM2.5 */
+    .waffle-grid .c2 { background: #5ab4ff; }  /* Ozono */
+    .waffle-grid .c3 { background: #ffaa5a; }  /* NO₂   */
+    .waffle-grid .c4 { background: #5aff8a; }  /* CO    */
+
     /* ── AQI legend ── */
     .aqi-legend {
       display: flex;
