@@ -1182,6 +1182,32 @@
     };
 
   Plotly.newPlot('grafico4', [trace], layout, config);
+
+  Plotly.newPlot('grafico4', [trace], layout, config);
+
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // AUDIO INTERACTIVO GRÁFICO 4
+  // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  const grafico4El = document.getElementById('grafico4');
+  let lastHoveredCountry4 = null;
+  const sonification4 = new SoundSonification(audioManager.audioContext, audioManager.masterGain);
+
+  grafico4El.on('plotly_hover', function(data) {
+    if (!data.points || data.points.length === 0) return;
+    const point = data.points[0];
+    const country = point.y;  // País (eje Y porque es barra horizontal)
+    const pm25 = point.x;     // Valor PM2.5
+
+    if (lastHoveredCountry4 === country) return;
+    lastHoveredCountry4 = country;
+
+    sonification4.playAQITone(pm25);
+  });
+
+  grafico4El.on('plotly_unhover', function() {
+    lastHoveredCountry4 = null;
+  });
+
 })();
 
   const toggleBtn = document.getElementById('toggleContaminantes');
