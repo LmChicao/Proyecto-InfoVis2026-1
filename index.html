@@ -8,17 +8,17 @@
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
   <style>
     :root {
-      --bg:        #16263f;  /* azul profundo */
+      --bg:        #16263f; 
       --bg2:       #1b2f4d;
-      --card:      #f4ecd9;  /* tarjetas crema / hueso */
-      --card2:     #e9ddc1;  /* encabezados crema */
+      --card:      #e8b777;
+      --card2:     #dac490;
       --border:    #2c456b;
       --border2:   #3a557d;
-      --accent:    #f1e6c8;  /* crema / hueso */
-      --accent2:   #fff3d4;
+      --accent:    #e8c35f;
+      --accent2:   #e2ca8f;
       --accent-dim:#3f5c87;
-      --danger:    #e8902a;  /* ámbar (seguro para daltonismo junto al azul) */
-      --text:      #f0e9d6;  /* texto crema */
+      --danger:    #e8902a;  
+      --text:      #f0e9d6;  
       --text-dim:  #aebfd6;
       --text-faint:#5d7298;
     }
@@ -726,6 +726,35 @@
       </div>
     </div>
 
+    <div class="section-divider"><span>Visualización 04 — Comparación entre países</span></div>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div class="chart-number">04</div>
+        <div class="chart-title-block">
+          <h2>Humo, polvo y hollín (PM2.5): tres países, tres realidades</h2>
+          <p>Promedio anual de PM2.5 (µg/m³).</p>
+        </div>
+      </div>
+      <div class="chart-body">
+        <div id="grafico4" class="plotly-chart"></div>
+      </div>
+      <div class="aqi-legend">
+        <span class="aqi-chip" style="background:#2a1408;color:#e0903f;">Bangladesh — 78.0 µg/m³ (2º más contaminado)</span>
+        <span class="aqi-chip" style="background:#2a2208;color:#e8b85a;">India — 50.6 µg/m³ (5º más contaminado)</span>
+        <span class="aqi-chip" style="background:#0a1525;color:#5ab4ff;">Nueva Zelanda — ≤5 µg/m³ (cumple guía OMS)</span>
+      </div>
+      <div class="conclusion-box">
+        <div class="label">Conclusión</div>
+        <p>
+          La diferencia es enorme: Bangladesh respira casi 16 veces más partículas finas que la guía
+          de seguridad de la OMS (5 µg/m³) e India unas 10 veces más, mientras que Nueva Zelanda se
+          mantiene dentro del límite saludable. Un mismo contaminante puede significar realidades de
+          salud completamente distintas según el país.
+        </p>
+      </div>
+    </div>
+
   </main>
 
   <footer>
@@ -811,15 +840,15 @@
     (async function() {
       // Datos aproximados del dataset — reemplaza con los valores reales si difieren
       const paises = [
-        'Emiratos Árabes Unidos',
-        'Afghanistan',
-        'Mongolia',
-        'India',
+        'Kuwait',
+        'Aruba',
+        'United Arab Emirates',
         'Pakistan',
-        'Bangladesh',
+        'Mauritania',
+        'Bahrain',
         'Republic of Korea',   // ← si aparece en tu top 7 real, ajusta
       ];
-      const valores = [108.3, 123.7, 130.4, 142.9, 147.2, 160.5, 108.1];
+      const valores = [162, 163, 163.67, 178.79, 179, 188, 421];
 
       // Colores proporcionales al valor (escala amarillo → naranja → rojo)
       const minV = Math.min(...valores);
