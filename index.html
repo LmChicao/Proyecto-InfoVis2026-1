@@ -1135,6 +1135,55 @@
 
     })();
 
+  // ─────────────────────────────────────────────
+  // GRÁFICO 4 — PM2.5: Bangladesh vs India vs Nueva Zelanda
+  // ─────────────────────────────────────────────
+  (function() {
+    const paises  = ['Nueva Zelanda', 'India', 'Bangladesh'];
+    const valores = [4.8, 50.6, 78.0];
+    const colores = ['#5ab4ff', '#e8b85a', '#e0903f'];
+
+    const trace = {
+      type: 'bar',
+      orientation: 'h',
+      x: valores,
+      y: paises,
+      text: valores.map(v => `${v} µg/m³`),
+      textposition: 'outside',
+      textfont: { color: FONT_COL, size: 12 },
+      marker: { color: colores },
+      hovertemplate: '<b>%{y}</b><br>PM2.5: %{x} µg/m³<extra></extra>',
+    };
+
+    const layout = {
+      ...baseLayout,
+      height: 320,
+      bargap: 0.45,
+      xaxis: {
+        title: { text: 'PM2.5 promedio (µg/m³)', font: { color: FONT_DIM } },
+        gridcolor: GRID, color: FONT_DIM, zeroline: false,
+        range: [0, 100],
+      },
+      yaxis: { gridcolor: GRID, color: FONT_DIM },
+      // Línea guía OMS en 5 µg/m³
+      shapes: [{
+        type: 'line', x0: 5, x1: 5, y0: -0.5, y1: paises.length - 0.5,
+        line: { color: '#5aff6e', width: 2, dash: 'dash' },
+      }],
+      annotations: [{
+        x: 6, y: 0.98, xref: 'x', yref: 'paper',
+        text: 'Guía OMS (5 µg/m³)', showarrow: false,
+        xanchor: 'left', yanchor: 'top',
+        font: { color: '#5aff6e', size: 11 },
+        bgcolor: 'rgba(0,0,0,0.35)',
+        borderpad: 3,
+      }],
+      margin: { t: 30, b: 50, l: 130, r: 80 },
+    };
+
+  Plotly.newPlot('grafico4', [trace], layout, config);
+})();
+
   const toggleBtn = document.getElementById('toggleContaminantes');
   const panel = document.getElementById('panelContaminantes');
 
