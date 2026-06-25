@@ -717,6 +717,7 @@
       </div>
       <div class="conclusion-box">
         <div class="label">Conclusión</div>
+        <p style="color:#ffffff;"></p>
         <p>
           Los datos muestran que la contaminación por partículas finas (PM2.5) es la principal amenaza
           para la calidad del aire a nivel global, concentrada especialmente en Asia del Sur y Medio Oriente.
@@ -1135,6 +1136,8 @@
 
     })();
 
+
+
   // ─────────────────────────────────────────────
   // GRÁFICO 4 — PM2.5: Bangladesh vs India vs Nueva Zelanda
   // ─────────────────────────────────────────────
@@ -1190,7 +1193,6 @@
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   const grafico4El = document.getElementById('grafico4');
   let lastHoveredCountry4 = null;
-  const sonification4 = new SoundSonification(audioManager.audioContext, audioManager.masterGain);
 
   grafico4El.on('plotly_hover', function(data) {
     if (!data.points || data.points.length === 0) return;
@@ -1202,9 +1204,13 @@
     lastHoveredCountry4 = country;
 
     // Mismo audio que la celda C1 del gráfico 2 (Humo, Polvo y Hollín — PM2.5)
+    // El volumen depende del valor de PM2.5: más contaminante = más fuerte.
+    // Rango del eje X = 0–100 µg/m³ → volumen entre 0.15 y 1.0
+    const volumen = 0.15 + Math.min(pm25 / 100, 1) * 0.85;
+
     if (typeof audioManager !== 'undefined' && audioManager.audioContext) {
       audioManager.stopAll();
-      audioManager.playSound('Fondo_Fabricametalurgica.mp3', 0.8, 5);
+      audioManager.playSound('Fondo_Fabricametalurgica.mp3', volumen, 5);
     }
   });
 
@@ -1231,4 +1237,3 @@
   </script>
 </body>
 </html>
- 
