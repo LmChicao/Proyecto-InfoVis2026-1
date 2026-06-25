@@ -10,7 +10,7 @@
     :root {
       --bg:        #f0e9d6; 
       --bg2:       #0f0f08;
-      --card:      #78cbd6;
+      --card:      #32699c;
       --card2:     #ade2f7;
       --border:    #2c456b;
       --border2:   #3a557d;
@@ -1201,7 +1201,11 @@
     if (lastHoveredCountry4 === country) return;
     lastHoveredCountry4 = country;
 
-    sonification4.playAQITone(pm25);
+    // Mismo audio que la celda C1 del gráfico 2 (Humo, Polvo y Hollín — PM2.5)
+    if (typeof audioManager !== 'undefined' && audioManager.audioContext) {
+      audioManager.stopAll();
+      audioManager.playSound('Fondo_Fabricametalurgica.mp3', 0.8, 5);
+    }
   });
 
   grafico4El.on('plotly_unhover', function() {
@@ -1227,3 +1231,4 @@
   </script>
 </body>
 </html>
+ 
