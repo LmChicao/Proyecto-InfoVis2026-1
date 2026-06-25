@@ -718,7 +718,6 @@
       <div class="conclusion-box">
         <div class="label">Conclusión</div>
         <p style="color:#ffffff;"></p>
-        <p>
           Los datos muestran que la contaminación por partículas finas (PM2.5) es la principal amenaza
           para la calidad del aire a nivel global, concentrada especialmente en Asia del Sur y Medio Oriente.
           India, con 2488 ciudades monitoreadas, representa la mayor escala del problema, mientras que
@@ -748,7 +747,7 @@
       </div>
       <div class="conclusion-box">
         <div class="label">Conclusión</div>
-        <p>
+        <p style="color:#ffffff;"></p>
           La diferencia es enorme: Bangladesh respira casi 16 veces más partículas finas que la guía
           de seguridad de la OMS (5 µg/m³) e India unas 10 veces más, mientras que Nueva Zelanda se
           mantiene dentro del límite saludable. Un mismo contaminante puede significar realidades de
@@ -1187,7 +1186,7 @@
   Plotly.newPlot('grafico4', [trace], layout, config);
 
   Plotly.newPlot('grafico4', [trace], layout, config);
-
+  
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   // AUDIO INTERACTIVO GRÁFICO 4
   // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1204,9 +1203,14 @@
     lastHoveredCountry4 = country;
 
     // Mismo audio que la celda C1 del gráfico 2 (Humo, Polvo y Hollín — PM2.5)
-    // El volumen depende del valor de PM2.5: más contaminante = más fuerte.
-    // Rango del eje X = 0–100 µg/m³ → volumen entre 0.15 y 1.0
-    const volumen = 0.15 + Math.min(pm25 / 100, 1) * 0.85;
+    // Volumen exacto por país (más contaminante = más fuerte):
+    //   Bangladesh 98%, India 58%, Nueva Zelanda 28%
+    const volumenPorPais = {
+      'Bangladesh':    0.98,
+      'India':         0.58,
+      'Nueva Zelanda': 0.28,
+    };
+    const volumen = volumenPorPais[country] ?? Math.min(pm25 / 100, 1);
 
     if (typeof audioManager !== 'undefined' && audioManager.audioContext) {
       audioManager.stopAll();
